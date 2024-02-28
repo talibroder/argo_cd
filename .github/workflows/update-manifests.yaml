@@ -1,0 +1,27 @@
+name: Update Manifests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-manifests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Update Manifests
+      run: |
+        sed -i "s|image: talibro/weather:.*|image: talibro/weather:${{ github.sha }}|" manifests/deployment.yaml
+
+    - name: Commit Changes
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add manifests/deployment.yaml
+        git commit -m "Update deployment image to ${GITHUB_SHA}"
+        git push
+
